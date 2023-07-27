@@ -1,6 +1,6 @@
 ﻿namespace ApiPagingDemo.Services
 {
-    public class WeatherService
+    public class WeatherService : IWeatherService
     {
         public IEnumerable<WeatherForecast> WeatherForecasts()
         {
