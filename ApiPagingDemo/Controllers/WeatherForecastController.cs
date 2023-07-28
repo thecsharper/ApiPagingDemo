@@ -1,7 +1,9 @@
 using System.Text.Json;
+
 using Microsoft.AspNetCore.Mvc;
 
 using ApiPagingDemo.PagingHelpers;
+using ApiPagingDemo.Services;
 
 namespace ApiPagingDemo.Controllers
 {
@@ -10,9 +12,9 @@ namespace ApiPagingDemo.Controllers
     public class WeatherForecastController : ControllerBase
     {
         private readonly ILogger<WeatherForecastController> _logger;
-        private readonly IQueryable<WeatherForecast> _forecasts;
+        private readonly IWeatherService _forecasts;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IQueryable<WeatherForecast> forecasts)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IWeatherService forecasts)
         {
             _logger = logger;
             _forecasts = forecasts;
@@ -21,7 +23,9 @@ namespace ApiPagingDemo.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get([FromQuery] SearchParameters ownerParameters)
         {
-            var result = PagedList<WeatherForecast>.ToPagedList(_forecasts.OrderBy(on => on.Id),
+            var forecasts = _forecasts.WeatherForecasts().AsQueryable().OrderBy(on => on.Id);
+
+            var result = PagedList<WeatherForecast>.ToPagedList(forecasts,
                                                                 ownerParameters.PageNumber,
                                                                 ownerParameters.PageSize);
 
